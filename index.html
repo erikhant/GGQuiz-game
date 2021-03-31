@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="./dist/img/favicon.ico">
+    <link rel="stylesheet" href="./dist/bootstrap/bootstrap.min.css">
+    <link rel="stylesheet" href="./source/css/app.css">
+    <title>GG Quiz</title>
+</head>
+<body>
+    <div class="root">
+        <!-- Container -->
+        <div class="container">
+            <div class="wrapper row m-0">
+                <div class="board col-12 p-0">
+                    <div class="move-page row m-0">
+                        <div class="info-wrapper">
+                            <div class="info-inner text-center">
+                                <div class="logo-xl mb-4">
+                                    <img src="./dist/icon/Logo.png" alt="logo">
+                                </div>
+                                <div class="info-text px-3">
+                                    <div class="d-flex justify-content-center">
+                                        <h4 class="tittle-section m-0 mb-4 ml-4">about</h4>
+                                        <button class="btn btn-sm expand-info p-0 px-1 ml-3" onclick="expandSize();">&#8597;</button>
+                                    </div>
+                                    <div class="text-content">
+                                        <div class="text-inner">
+                                            <!-- ABOUT THE GAME -->
+                                            <p>
+                                                GGQuiz adalah sebuah game kuis yang terinspirasi dari acara kuis legendaris 'Who Wants to Be a Millionaire'. Game ini mengadopsi rules permainan yang hampir sama dengan acara tersebut, dan didalamnya memiliki item-item beragam yang membuat game ini terasa lebih fun!.
+                                                <br>                                       
+                                                <br>                                       
+                                                GGQuiz game memiliki kategori pertanyaan yang ditampilkan secara random dalam sekali permainan, dan tingkat kesulitannya akan selalu mengikuti sesuai tingkatan levelnya.
+                                            </p>
+                                            <br>
+                                            <br>
+                                            <!-- THE RULES GAME -->
+                                            <h4 class="tittle-section mb-3" style="font-size:18px;">Aturan Permainan</h4>
+                                            <ol class="text-left pl-4">
+                                                <li>Ada 13 pertanyaan yang harus dijawab dengan benar untuk memenangi 10.000 coin</li>
+                                                <li>Pemain akan melewati 5 titik level game, dimana semakin naik level semakin sulit pula pertanyaan yang diberikan</li>
+                                                <li>Dalam perjalanan menuju tangga 10.000 coin, pemain akan dibekali dengan 3 pilihan bantuan yaitu 50/50 (Fifty fifty), Highlight answer (sorot jawaban), dan Googling (googling jawaban).</li>
+                                                <li>Jika Pemain menjawab salah, maka coin yang didapatkan sesuai dengan posisi pada tangga coin saat itu</li>
+                                            </ol>
+                                            <ol class="text-left pl-4">
+                                                Permainan akan berakhir jika dan hanya jika:
+                                                <li>Pemain menjawab salah</li>
+                                                <li>Pemain telah menyelesaikan pertanyaan ke-13 dengan benar.</li>
+                                            </ol>   
+                                            <br>
+                                            <br>
+                                            <!-- DEVELOPER GAME SOCIAL MEDIA -->
+                                            <h4 class="tittle-section mb-4" style="font-size:18px;">Developer</h4>
+                                            <h4>Erik D Hernanto</h4>
+                                            <div class="social-link row justify-content-center m-0 py-2">
+                                                <a href="https://github.com/erikhant" target="_blank">
+                                                    <img src="./dist/img/github-logo.png" class="m-2" alt="github" width="45" height="45">
+                                                </a>
+                                                <a href="https://dribbble.com/erikharts01" target="_blank">
+                                                    <img src="./dist/img/dribbble-logo.png" class="m-2" alt="dribbble" width="45" height="45">
+                                                </a>
+                                                <a href="https://www.behance.net/erikharts" target="_blank">
+                                                    <img src="./dist/img/behance-logo.png" class="m-2" alt="behance" width="45" height="45">
+                                                </a>
+                                                <a href="https://instagram.com/dhernanto15" target="_blank">
+                                                    <img src="./dist/img/instagram-logo.png" class="m-2" alt="instagram" width="45" height="45">
+                                                </a>
+                                            </div> 
+                                            <br>
+                                            <br>
+                                            <!-- CREDIT GAME ASSETS -->
+                                            <h4 class="tittle-section mb-4" style="font-size:18px;">Credit</h4>
+                                            <div class="credits text-center">
+                                                <p>Design</p>
+                                                <p class="m-0">Emoji</p>
+                                                <p><a href="http://www.freepik.com">Designed by Freepik</a></p>
+                                                <p class="m-0">Throphy</p>
+                                                <p><a href="http://www.freepik.com">Designed by macrovector / Freepik</a></p>
+                                                <br>
+                                                <p class="m-1">Sounds effect</p>
+                                                <p><a href="https://freesound.org">freesound.org</a></p>
+                                                <p class="m-1">junggle - button hover</p>
+                                                <p class="m-1">nenadsimic - menu selection click</p>
+                                                <p class="m-1">littlerobotsoundfactory - achievement</p>
+                                                <p class="m-1">mativve - electro win sound</p>
+                                                <p class="m-1">deleted-user-877451 - game over</p>
+                                            </div>
+                                            <br>
+                                            <br>
+                                            <!-- COPYRIGHT -->
+                                            <h4 class="tittle-section mb-4" style="font-size:18px;">Copyright 2021 All Right Reserved</h4>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="back-home py-4">
+                                    <button class="btn tr-move p-0"><img src="./dist/icon/icHome.svg" alt="home"></button>
+                                </div>     
+                            </div>
+                        </div>
+                        <div class="home-wrapper">
+                            <div class="home-inner row justify-content-center align-items-start">
+                                <div class="logo-xl col-12 text-center">
+                                    <img src="./dist/icon/Logo.png" alt="logo">
+                                </div>
+                                <div class="row justify-content-center align-items-center py-4">
+                                    <div class="info-btn mx-5 text-center">
+                                        <button type="button" id="infoApp" class="btn tr-move"><img src="./dist/icon/icAbout.svg"></button>
+                                        <div class="col-12 text-center tittle-section">about</div>
+                                    </div>
+                                    <div class="play-btn mx-5 text-center">
+                                        <button type="button" id="startApp" class="btn"><img src="./dist/icon/icPlay.svg"></button>
+                                        <div class="col-12 text-center tittle-section">start</div>
+                                    </div>
+                                    <div class="contact-btn mx-5 text-center">
+                                        <button type="button" id="contactApp" class="btn tr-move"><img src="./dist/icon/icContact.svg"></button>
+                                        <div class="col-12 text-center tittle-section">contact</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="contact-wrapper">
+                            <div class="contact-inner text-center">
+                                <div class="logo-xl mb-4">
+                                    <img src="./dist/icon/Logo.png" alt="logo">
+                                </div>
+                                <div class="back-home pb-4 pt-2">
+                                    <button class="btn tr-move p-0"><img src="./dist/icon/icHome.svg" alt="home"></button>
+                                </div>  
+                                <div class="contact-text px-3">
+                                    <h1 class="tittle-section m-0 mb-4">contact</h1>
+                                    <div>
+                                        <p class="text-inner">
+                                            Jika ada pertanyaan atau ingin informasi lebih lebih lanjut, kirimkan email dan pesanmu ke: erikd.h49@gmail.com
+                                            <br>
+                                            atau kamu bisa langsung kirimkan pesanmu dibawah ini
+                                        </p>
+                                    </div>
+                                    <form class="message-form" name="email-subs">
+                                        <div class="row justify-content-center m-0 pt-2">
+                                            <div class="col-4">
+                                                <div class="form-group">
+                                                    <input type="text" class="form-control" name="name" id="name" placeholder="Masukkan Nama" required>
+                                                </div>
+                                                <div class="form-group">
+                                                    <input type="email" class="form-control" name="email" id="email" placeholder="Masukkan Email" required>
+                                                </div>
+                                            </div>
+                                            <div class="col-6">
+                                                <div class="row m-0 email-message">
+                                                    <div class="form-group col-8 p-0 pl-2 pt-2">
+                                                        <textarea type="text" class="form-control" name="message" id="message" placeholder="Ketikkan Pesan Anda.." required style="height: 100%;"></textarea>
+                                                    </div>
+                                                    <div class="col-4 p-0 pt-1">
+                                                        <button type="submit" class="btn btn-lg send-email"><img src="./dist/icon/icSend_Email.svg"></button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </form>
+                                    
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="overlay">
+        <div class="preload">
+            <div class="preload-text">loading...</div>
+            <div class="preload-progress">
+                <div class="spinner-grow text-success"></div>
+                <div class="spinner-grow text-info"></div>
+                <div class="spinner-grow text-warning"></div>
+            </div>
+        </div>
+    </div>
+    <div hidden>
+        <audio src="./dist/sounds/btn_hover.mp3" data-audio="hover"></audio>
+        <audio src="./dist/sounds/btn_click.wav" data-audio="click"></audio>
+    </div>
+    <script src="./dist/js/jquery-3.4.1.js"></script>
+    <script src="./dist/js/bootstrap.bundle.min.js"></script>
+    <script src="./index.js"></script>
+</body>
+</html>
