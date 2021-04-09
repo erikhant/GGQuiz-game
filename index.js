@@ -23,13 +23,19 @@
         audio.play();
     }
 
+
+    function startSound() {
+        const audio = document.querySelector('#audio-start');
+        playSound(audio);
+    }
+
     function clickSound() {
-        const audio = document.querySelector('audio[data-audio="click"]');
+        const audio = document.querySelector('#audio-click');
         playSound(audio);
     }
 
     function hoverSound() {
-        const audio = document.querySelector('audio[data-audio="hover"]');
+        const audio = document.querySelector('#audio-hover');
         playSound(audio);
     }
 
@@ -79,16 +85,16 @@ moveTriggers.forEach( trigger => {
 });
 
 
-
  /*     HOME BUTTONS CLICK EVENTS     */
 const homeButtons =  Array.from(document.querySelectorAll('button[type="button"] img'));
 homeButtons.forEach(button => button.addEventListener('mouseenter', hoverSound));
 
+
  /*     START GAME BUTTON ( redirect to looby page )     */
 const start = document.querySelector('#startApp img');
 start.addEventListener('click', ()=> {
-    clickSound();
-    setTimeout(()=> startGame(), 300)
+    startSound();
+    setTimeout(()=> startGame(), 1000)
     
 });
 
@@ -99,6 +105,7 @@ const form = document.forms['email-subs'];
 
 form.addEventListener('submit', e => {
     e.preventDefault();
+    clickSound();
     emailSubs();
 
     fetch(scriptURL, {

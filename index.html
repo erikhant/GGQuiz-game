@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="shortcut icon" href="./dist/img/favicon.ico">
     <link rel="stylesheet" href="./dist/bootstrap/bootstrap.min.css">
-    <link rel="stylesheet" href="./source/css/app.css">
+    <link rel="stylesheet" href="./src/css/app.css">
     <title>GG Quiz</title>
 </head>
 <body>
@@ -52,6 +52,22 @@
                                             </ol>   
                                             <br>
                                             <br>
+                                            
+                                            <!-- CREDIT GAME ASSETS -->
+                                            <h4 class="tittle-section mb-4" style="font-size:18px;">Credit</h4>
+                                            <div class="credits text-center">
+                                                <p>Design</p>
+                                                <p class="m-0">Animation Asset</p>
+                                                <p><a href="https://lottiefiles.com/">Provided by LottieFiles</a></p>
+                                                <br>
+                                                <p class="m-0">Emoji & Throphy</p>
+                                                <p><a href="http://www.freepik.com">Designed by Freepik</a></p>
+                                                <br>
+                                                <p class="m-1">Sounds effect</p>
+                                                <p><a href="https://freesound.org">freesound.org</a></p>
+                                            </div>
+                                            <br>
+                                            <br>
                                             <!-- DEVELOPER GAME SOCIAL MEDIA -->
                                             <h4 class="tittle-section mb-4" style="font-size:18px;">Developer</h4>
                                             <h4>Erik D Hernanto</h4>
@@ -69,25 +85,6 @@
                                                     <img src="./dist/img/instagram-logo.png" class="m-2" alt="instagram" width="45" height="45">
                                                 </a>
                                             </div> 
-                                            <br>
-                                            <br>
-                                            <!-- CREDIT GAME ASSETS -->
-                                            <h4 class="tittle-section mb-4" style="font-size:18px;">Credit</h4>
-                                            <div class="credits text-center">
-                                                <p>Design</p>
-                                                <p class="m-0">Emoji</p>
-                                                <p><a href="http://www.freepik.com">Designed by Freepik</a></p>
-                                                <p class="m-0">Throphy</p>
-                                                <p><a href="http://www.freepik.com">Designed by macrovector / Freepik</a></p>
-                                                <br>
-                                                <p class="m-1">Sounds effect</p>
-                                                <p><a href="https://freesound.org">freesound.org</a></p>
-                                                <p class="m-1">junggle - button hover</p>
-                                                <p class="m-1">nenadsimic - menu selection click</p>
-                                                <p class="m-1">littlerobotsoundfactory - achievement</p>
-                                                <p class="m-1">mativve - electro win sound</p>
-                                                <p class="m-1">deleted-user-877451 - game over</p>
-                                            </div>
                                             <br>
                                             <br>
                                             <!-- COPYRIGHT -->
@@ -172,7 +169,7 @@
     </div>
     <div class="overlay">
         <div class="preload">
-            <div class="preload-text">loading...</div>
+            <div class="preload-logo"><img src="./dist/img/Logo.png"></div>
             <div class="preload-progress">
                 <div class="spinner-grow text-success"></div>
                 <div class="spinner-grow text-info"></div>
@@ -181,8 +178,9 @@
         </div>
     </div>
     <div hidden>
-        <audio src="./dist/sounds/btn_hover.mp3" data-audio="hover"></audio>
-        <audio src="./dist/sounds/btn_click.wav" data-audio="click"></audio>
+        <audio src="./dist/sounds/start_game.wav" id="audio-start"></audio>
+        <audio src="./dist/sounds/btn_hover.mp3" id="audio-hover"></audio>
+        <audio src="./dist/sounds/btn_click.wav" id="audio-click"></audio>
     </div>
     <script src="./dist/js/jquery-3.4.1.js"></script>
     <script src="./dist/js/bootstrap.bundle.min.js"></script>

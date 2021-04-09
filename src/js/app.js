@@ -43,12 +43,14 @@
     }
 
 
-    function setPlayer( { name, coin } ) {
+    function setPlayer( { name, coin, win, lose } ) {
         // console.log(name, coin)
         document.querySelectorAll('.player-name')[0].innerText = name;
         document.querySelectorAll('.player-name')[1].innerText = name;
         document.querySelectorAll('.player-coin')[0].innerText = coin;
         document.querySelectorAll('.player-coin')[1].innerText = coin;
+        document.querySelector('#player-win').innerText = win;
+        document.querySelector('#player-fail').innerText = lose;
 
     }
 
@@ -59,14 +61,7 @@
 
 
     function getCategoryValue( arrElems, arrValues ) {
-        arrElems.forEach(ctg => {
-            if (ctg.checked) {
-                arrValues.push(ctg.value);
-            }
-        });
-        if (arrValues.length < 3) {
-            return false;
-        }
+        arrElems.forEach(ctg => arrValues.push(ctg.value));
         return SETTINGS_GAME.categories = arrValues;
     }
 
@@ -94,17 +89,32 @@
 
 
     function saveSettings() {
+        let categories = Array.from(document.querySelectorAll('input[type="checkbox"]'));
         let values = [];
-        let check = getCategoryValue(categories, values);
-        return check ? alert('Berhasil diterapkan!') : alert('Pilih minimal 3 kategori diatas!');
+        let check = saveChanges(categories, values);
+        return check ? 'Berhasil diterapkan!' : 'Pilih minimal 3 kategori diatas!';
+    }
+
+
+    function saveChanges(arrElems, arrValues){
+        arrElems.forEach(ctg => {
+            if (ctg.checked) {
+                arrValues.push(ctg.value);
+            }
+        });
+        if (arrValues.length < 3) {
+            return false;
+        }
+        // Save to Session Storage
+        syncSessionStorage('SETTING', arrValues);
+        return true;
     }
 
 
     function getQuestion( amount, diff, categories ) {
-        // const idCategory = randomLimitNumber( 9, 9 );
-        const currentCategory = countCategory( SETTINGS_GAME );
+        const currentCategory = counterCategory( PLAYER_GAME.settings );
         const URL = `https://opentdb.com/api.php?amount=${amount}&category=${categories[currentCategory]}&difficulty=${diff}&type=multiple`;
-        // const URL = 'test.json'; // Only For Testing Api
+
         return fetch(URL, { 
                 method : 'GET' 
             })
@@ -188,20 +198,21 @@
             const questionText = document.querySelector('.question-text p');
             const optTexts = Array.from(document.querySelectorAll('.choice-text'));
             if (count == 1) {
+                QUESTION_GAME.activeLanguage = 'en';
                 questionText.innerText = question[0].question;
                 optTexts.forEach((cb, index) => cb.innerText = choices[0][QUESTION_GAME.choices[2][index]]);
-                QUESTION_GAME.activeLanguage = 'en';
                 return count++;
             }
+            QUESTION_GAME.activeLanguage = SETTINGS_GAME.language;
             questionText.innerText = question[1].question;
             optTexts.forEach((cb, index) => cb.innerText = choices[1][QUESTION_GAME.choices[2][index]]);
-            QUESTION_GAME.activeLanguage = SETTINGS_GAME.language;
             return count--;
         }
     }
 
 
     function setSearchLink( keyword ) {
+        keyword = keyword.toLowerCase().split(' ').map(word => encodeURIComponent(word)).join('+');
         document.getElementById('googleSearch').setAttribute('href', `https://www.google.com/search?q=${keyword}`);
     }
 
@@ -235,8 +246,31 @@
         }
     }
 
+
+    function setQuestions( enQuestion, olQuestion, language ) {
+        QUESTION_GAME.question = [
+            {   id : 'en',
+                question : enQuestion[0]
+            },
+            {   id : language,
+                question : olQuestion[0]
+            }
+        ];
+        QUESTION_GAME.correctAnswer = [
+            {   id : 'en',
+                correct : enQuestion[1]
+            },
+            {   id : language,
+                correct : olQuestion[1]
+            }
+        ];
+        QUESTION_GAME.choices = [ enQuestion[2], olQuestion[2], corrPosition = 0 ];
+        QUESTION_GAME.activeLanguage = language;
+    }
+
+
     // ASYNC FUNCTION
-    async function gameStart( { requestPerCall, difficulties, language, categories } ){
+    async function gameStart( { requestPerCall, difficulties, language }, { categories } ){
         try{
             // Request question to API
             // The results are in english
@@ -245,67 +279,56 @@
             // Decode HTML characters code
             let enResultQt = result.map(data => convertHTMLEntity(data.question)).join('').trim();
             let enResultCorr = result.map(data => convertHTMLEntity(data.correct_answer)).join('').trim();
-            let enResultIncorr = result.map(data => data.incorrect_answers).map(c => c.map(b => convertHTMLEntity(b))).join('');
+            let enResultIncorr = result.map(data => data.incorrect_answers).map(c => c.map(b => convertHTMLEntity(b)));
             
-            // Encode string to URL Encoding (RFC 3986)
-            let enCodeResultQt = encodeURIComponent(enResultQt);  
-            let enCodeResultCorr = encodeURIComponent(enResultCorr);
-            let enCodeResultIncorr = encodeURIComponent(enResultIncorr);
+            let enCodeResultQt = encodeURIComponent(enResultQt);  // Encode string to URL Encoding (RFC 3986)
+            let enChoices;
+            let olResutQt;
+            let olResutCorr;
+            let olChoices;
             
-            // Pass the encode strings to temporary variables
-            let _tempQ = enCodeResultQt;
-            let _tempC = [enCodeResultCorr,enCodeResultIncorr];
+            enChoices = [enResultCorr,...enResultIncorr[0].map(text => text.trim())];   // Push all choice option & Clear empty space
+            
+            olResutQt = await translateQuiz( enCodeResultQt, language );
 
-            // Translate to Other Language (default is Indonesia)
-            _tempQ = await translateQuiz( _tempQ, language );
-            _tempC = await translateQuiz( _tempC, language );
-            
-            let idResultQt = _tempQ;
-            [idResultCorr, ...idChoices] = _tempC.split(',').map(text => text.trim());      // Breaks the strings into arrays & Clear empty space
-            let enChoices = enResultIncorr.split(',').map(text => text.trim());             // Breaks the strings into arrays & Clear empty space
-           
-            enChoices.push(enResultCorr);                  // Push all choice option in english language
-            idChoices.push(idResultCorr);                  // Push all choice option in other language (default is Indonesia)
+            /*    OPTION CHECKING CONDITION   */
 
-            // Pass all the values above to main variable
-            QUESTION_GAME.question = [
-                {   id : 'en',
-                    question : enResultQt
-                },
-                {   id : language,
-                    question : idResultQt
-                }
-            ];
-            QUESTION_GAME.correctAnswer = [
-                {   id : 'en',
-                    correct : enResultCorr
-                },
-                {   id : language,
-                    correct : idResultCorr
-                }
-             ];
-            QUESTION_GAME.choices = [ enChoices, idChoices, corrPosition = 0 ];
-            QUESTION_GAME.activeLanguage = language;
+            // If Option Answer is Number Format
+            if (!isNaN(parseFloat(enResultCorr))) {       
+                olResutCorr = enResultCorr;   
+                olChoices = enChoices;
+                
+            } else {
+            // Otherwise, Option Answer is String
+                let enCodeResultCorr = encodeURIComponent(enResultCorr);            // Encode string to URL Encoding (RFC 3986)
+                let enCodeResultIncorr = encodeURIComponent(enResultIncorr[0]);     // Encode string to URL Encoding (RFC 3986)
+
+                let _temp = [enCodeResultCorr,enCodeResultIncorr];                  // Pass the encode strings to temporary variables
+                olChoices = await translateQuiz( _temp, language );                 // Translate to Other Language (default is Indonesia)                
+
+                [olResutCorr] = olChoices = olChoices.split(',').map(text => text.trim());   // Push all choice option in other language & Clear empty space
+            }
             
+            setQuestions([enResultQt, enResultCorr, enChoices], [olResutQt, olResutCorr, olChoices], language);   // Pass all the values above to main variable
             setQuiz(QUESTION_GAME);
             setHighlightText({ mainText:'', captionText:''});
-            setSearchLink(QUESTION_GAME.question[1].question.split(' ').join('+'));
-            muteInteraction(choiceButtons, optionHelperButtons, [translateButton]);
+            setSearchLink(QUESTION_GAME.question[1].question);
             setEmoji(false);
+            removeAnswerAnimation();
+            muteInteraction(choiceButtons, optionHelperButtons, [translateButton]);
             return;
         }
         catch(error){
-            // Show error to console
-            console.error(error.message);
-            // Show error to alert
-            alert('Internal Error! Please try again later or refresh the page.');
-            // Reset all value and variable to default
-            resetGame();
-            CHECKPOINT_GAME = 0;
-            CURRENT_COIN = 0;
-            document.body.classList.toggle('playing');
+            console.error(error.message);                                           // Show error to console
+            alert('Internal Error! Please try again later or refresh the page.');   // Show error to alert
+            
+            resetGame();                                // Reset all value and variable to default
+            CHECKPOINT_GAME = CURRENT_COIN = 0;         // Reset Checkpoint & Coin
+            
+            document.body.classList.toggle('playing');  // Transition menu to lobby
+            removeAnswerAnimation();
             transitionSound();
-            setTimeout(transitionSound, 1000);
+            setTimeout(transitionSound, 1500);
         }
     }
 
@@ -320,7 +343,24 @@
     }
 
 
-    function setHighlightText( { mainText, captionText } ) {
+    function removeAnswerAnimation(){
+        const parent = document.querySelector('.instruc-game');
+        const obj = document.querySelector('#answer-anim');
+        if (!obj) return;
+        parent.removeChild(obj);
+    }
+
+
+    function playAnswerAnimation ( url = '' ){
+        const parent = document.querySelector('.instruc-game');
+        const obj = `<lottie-player src="${url}" id="answer-anim" background="transparent" speed="1" style="width:150px;height:150px;" autoplay></lottie-player>`;
+        
+        parent.insertAdjacentHTML('afterbegin', obj);
+
+    }
+
+
+    function setHighlightText( { mainText, captionText }) {
         const mt = document.querySelector('.answer-text');
         const ct = document.querySelector('.caption-text');
         if (typeof(mainText) !== "string" && typeof(captionText) !== "string") {
@@ -346,50 +386,46 @@
         return document.querySelector('.emoticon').classList.remove('show-up');    // Emoji toggle show up
     }
     
-
+    
     function checkActiveLanguage() {
-        return QUESTION_GAME.activeLanguage !== SETTINGS_GAME.language;
+        const check = QUESTION_GAME.activeLanguage !== SETTINGS_GAME.language;
+        const correctAnswer = switchCorrectAnswer(check)
+        return correctAnswer;
+    }
+
+
+    function switchCorrectAnswer( condition ) {
+        let currentLang = QUESTION_GAME.correctAnswer[1].correct;       // Pass Value Correct answer on current language 
+        
+        if (condition) {
+            currentLang = QUESTION_GAME.correctAnswer[0].correct;       // Pass Value Correct answer on english language 
+        }
+        return currentLang;
     }
 
 
     function getCorrectAnswer( action, arrElems1, arrElems2, arrElms3 ) {
-        const enLang = checkActiveLanguage();
+        const nowAnswer = checkActiveLanguage();
         if (action === 'correct') {
-            if (enLang) {
-                // console.log('true : en');
-                arrElems1.forEach(el => el.lastElementChild.innerText === QUESTION_GAME.correctAnswer[0].correct ? el.classList.add(action) : el.classList.add('wrong'));
-            } else {
-                // console.log('false : id');
-                arrElems1.forEach(el => el.lastElementChild.innerText === QUESTION_GAME.correctAnswer[1].correct ? el.classList.add(action) : el.classList.add('wrong'));
-            }
+            arrElems1.forEach(el => el.lastElementChild.innerText === nowAnswer ? el.classList.add(action) : el.classList.add('wrong'));
             muteInteraction( arrElems1, arrElems2, arrElms3 );
             return;
         } 
         else{
-            if (enLang) {
-                // console.log('true : en')
-                return arrElems1.forEach(el => el.lastElementChild.innerText === QUESTION_GAME.correctAnswer[0].correct ? el.classList.toggle(action) : '');
-            }
-            // console.log('false : id')
-            return arrElems1.forEach(el => el.lastElementChild.innerText === QUESTION_GAME.correctAnswer[1].correct ? el.classList.toggle(action) : '');
+            return arrElems1.forEach(el => el.lastElementChild.innerText === nowAnswer ? el.classList.toggle(action) : '');
         }
     }
 
 
     function muteInteraction( ...arrElems ) {
-        // console.log(arrElems);
         arrElems.forEach( arrElem => arrElem.forEach(el => el.classList.toggle('disabled')));
     }
 
 
     function getFFifty( arrElems ) {
-        let enLang = checkActiveLanguage();
+        const nowAnswer = checkActiveLanguage();
         let corr;
-        if (enLang) {
-            arrElems.forEach((el, index) => el.lastElementChild.innerText === QUESTION_GAME.correctAnswer[0].correct ? corr = index : '');
-            return corr;
-        }
-        arrElems.forEach((el, index) => el.lastElementChild.innerText === QUESTION_GAME.correctAnswer[1].correct ? corr = index : '');
+        arrElems.forEach((el, index) => el.lastElementChild.innerText === nowAnswer ? corr = index : '');
         return corr;
     }
 
@@ -420,9 +456,8 @@
         document.getElementById('modalGame').classList.toggle('show');
         document.querySelector('.modal-backdrop').classList.toggle('show');
         
-
         if (winner) {
-            document.querySelector('.modal-footer #finishGame').innerHTML = `<img src="./dist/icon/icTakeCoin_btn.svg">`
+            document.querySelector('.modal-footer #finishGame').innerHTML = `<img src="./dist/icon/icTakeCoin_btn.svg" width="180">`
             document.querySelector('.modal-footer #finishGame').classList.add('m-auto');
             document.querySelector('.modal-footer #repeatGame').classList.add('d-none');
         }
@@ -448,9 +483,9 @@
         clearBoard();
         clearCheckpoint();
         setHighlightText({ mainText:'', captionText:''});
-        resetOptionHelper();
         setEmoji(false);
-        countCategory( SETTINGS_GAME, true);    // Reset count of category arrays
+        resetOptionHelper();
+        counterCategory( PLAYER_GAME.settings, true);    // Reset counter of array category
     }
 
 
@@ -471,37 +506,43 @@
 
 
     function transitionSound() {
-        const audio = document.querySelector('audio[data-audio="transition"]');
+        const audio = document.querySelector('#audio-transition');
         playSound(audio);
     }
 
 
     function clickSound() {
-        const audio = document.querySelector('audio[data-audio="click"]');
+        const audio = document.querySelector('#audio-click');
+        playSound(audio);
+    }
+
+    
+    function closeSound() {
+        const audio = document.querySelector('#audio-close');
         playSound(audio);
     }
 
 
     function trueSound() {
-        const audio = document.querySelector('audio[data-audio="correct-answer"]');
+        const audio = document.querySelector('#audio-answer');
         playSound(audio);
     }
     
     
     function gameOverSound() {
-        const audio = document.querySelector('audio[data-audio="game-over"]');
+        const audio = document.querySelector('#audio-gameover');
         playSound(audio);
     }
 
 
     function winnerSound() {
-        const audio = document.querySelector('audio[data-audio="winner-game"]');
+        const audio = document.querySelector('#audio-winner');
         playSound(audio);
     }
 
 
     function applauseSound() {
-        const audio = document.querySelector('audio[data-audio="applause"]');
+        const audio = document.querySelector('#audio-applause');
         playSound(audio);
     }
 
@@ -515,11 +556,21 @@
             case 'SAVE':
                 PLAYER_GAME.name = dataPlayer[0];
                 PLAYER_GAME.coin = dataPlayer[1];
-                PLAYER_GAME.highestLevel = dataPlayer[2];
+                PLAYER_GAME.win = dataPlayer[2];
+                PLAYER_GAME.lose = dataPlayer[3];
+                PLAYER_GAME.settings = {
+                    categories: dataPlayer[4]
+                }
             break;
             case 'UPDATE':
                 PLAYER_GAME.coin += dataPlayer[0];
-                PLAYER_GAME.highestLevel = dataPlayer[1] < PLAYER_GAME.highestLevel ? PLAYER_GAME.highestLevel : dataPlayer[1];
+                PLAYER_GAME.win += dataPlayer[1];
+                PLAYER_GAME.lose += dataPlayer[2];
+            break;
+            case 'SETTING':
+                PLAYER_GAME.settings = {
+                    categories : dataPlayer[0]
+                }
             break;
         }
         sessionStorage.setItem(GGQUIZ_SESSION, JSON.stringify(PLAYER_GAME));
@@ -557,11 +608,11 @@ let CURRENT_COIN = 0;
 let SETTINGS_GAME = {
     requestPerCall : 1,     // Do not change!
     language : 'id',        // Default language (indonesia)
-    difficulties : 'easy',   // Default first difficulity
-    categories : []
+    difficulties : 'easy',  // Default first difficulity
+    categories : []         // 
 }
 
-const GGQUIZ_SESSION = "GGQUIZ_SESSION"; // Session Storage Name
+const GGQUIZ_SESSION = "GGQUIZ_SESSION";    // Session Storage Name
 
 
 // When the Document loaded
@@ -569,12 +620,14 @@ window.addEventListener('load', ()=> {
     displayLoad();
     // GET Data First From Session Storage
     const getDataFromSessionStorage = getFromSessionStorage();
-        if (getDataFromSessionStorage) {
+        // Data from Session is exists
+        if (getDataFromSessionStorage) {    
             setPlayer(PLAYER_GAME);
             document.querySelector('#gameplay').style.display = 'flex';
             return;
         }
-    document.querySelector('.player-input').classList.toggle('asked');
+        // Data from Session doesn't exists
+        document.querySelector('.player-input').classList.toggle('asked');
 });
 
 
@@ -589,15 +642,15 @@ const randomText = [
         captionText : 'Ayoo Lanjutkan...'
     },
     {
-        mainText : 'GG Sekali!',
+        mainText : 'GG Euy!',
         captionText : 'Kamu pasti bisa menang...'
     },
     {
         mainText : 'Sipp!',
-        captionText : 'Ayo ayo.. kamu bisa melakukanya'
+        captionText : 'Ayo kamu bisa melakukanya'
     },
     {
-        mainText : 'Teruskan!',
+        mainText : 'Lanjutkan!',
         captionText : 'Jangan menyerahh.'
     }
 ]
@@ -606,14 +659,16 @@ const randomText = [
 /*  ENTER TO THE GAME  */
 const enterGame = document.querySelector('#enterGame');
     enterGame.addEventListener('click', ()=> {
-       
-        let name = getNameFirst();      // get name from input text
-        let coin = 0;                   // default first player coin
-        let level = 0;                  // the default player level that has been played
+        clickSound();
+        let name = getNameFirst();                       // get name from input text
+        let coin = 0;                                    // default first player coin
+        let win = 0;                                     // the default player wins that has been played
+        let lose = 0;                                    // the default player lose that has been played
+        let categorySelect = SETTINGS_GAME.categories;   // the first default category setting
         if (name === '') return validSetup('Mohon isikan nama kamu!');  // check empty string 
         // Session Storage
-        syncSessionStorage('SAVE', name, coin, level);   // save data player to session storage
-        setPlayer(PLAYER_GAME);                          // set data player to lobby board
+        syncSessionStorage('SAVE', name, coin, win, lose, categorySelect);   // save data player to session storage
+        setPlayer(PLAYER_GAME);                                         // set data player to lobby board
 
         setTimeout(() => document.querySelector('.player-input').classList.toggle('asked'), 500);
         document.querySelector('#gameplay').style.display = 'flex';
@@ -624,18 +679,21 @@ const enterGame = document.querySelector('#enterGame');
 /*  START PLAYING THE GAME  */
 const playGame = document.querySelector('#playGame');    
     playGame.addEventListener('click', ()=> {
-        transitionsBoard();
-        transitionSound();
-        setTimeout(transitionSound, 1000);
-        CHECKPOINT_GAME++
-        setTimeout(() => {
-            setHighlightText({
-                mainText : 'Bersiap!',
-                captionText : `Pertanyaan pertama`
-            });
-            setLevelGame(CHECKPOINT_GAME);
-            gameStart(SETTINGS_GAME);
-        }, 1300);
+        clickSound();
+        setTimeout(()=>{
+            transitionsBoard();
+            transitionSound();
+            setTimeout(transitionSound, 1200);
+            CHECKPOINT_GAME++
+            setTimeout(() => {
+                setHighlightText({
+                    mainText : 'Bersiap!',
+                    captionText : `Pertanyaan pertama`
+                });
+                setLevelGame(CHECKPOINT_GAME);
+                gameStart(SETTINGS_GAME, PLAYER_GAME.settings);
+            }, 1500);
+        }, 300);
     });
 
 
@@ -644,10 +702,9 @@ const playGame = document.querySelector('#playGame');
 const choiceButtons = Array.from(document.querySelectorAll('.multiple-choice'));
     choiceButtons.forEach( choiceButton => {
         choiceButton.addEventListener('click', function () {
-            const lang = checkActiveLanguage();
+            const correctAnswer = checkActiveLanguage();
             const playerAnswer = this.lastElementChild.innerText;
-            const correctAnswer = lang ? QUESTION_GAME.correctAnswer[0].correct : QUESTION_GAME.correctAnswer[1].correct;
-            let lastCoin, lastLevel;
+            let lastCoin = playerWin = playerLose = 0;
             getCorrectAnswer( 'correct', choiceButtons, optionHelperButtons, [translateButton] );
             // CHECK IF THE PLAYER ANSWERS CORRECTLY  
             // THE CODE BELOW WILL RUN
@@ -655,23 +712,24 @@ const choiceButtons = Array.from(document.querySelectorAll('.multiple-choice'));
                 CHECKPOINT_GAME++;
                 lastCoin = CURRENT_COIN = getCurrentCoin(CHECKPOINT_GAME);
                 setLevelGame(CHECKPOINT_GAME);
+                trueSound(); setEmoji();
+                playAnswerAnimation('https://assets7.lottiefiles.com/packages/lf20_ruryzm9h.json');
                 setHighlightText({
                     mainText : 'BENAR!',
-                    captionText : `Jawaban yang benar adalah ${correctAnswer}`
+                    captionText : ``
                 });
-                trueSound();
-                setEmoji();
                 setTimeout(() => {
                     // IF THE GAME IS ALREADY IN THE LAST QUESTION
                     if (CHECKPOINT_GAME === 18) {
+                        playerWin = 1;
                         modalToggle('<img src="./dist/img/winners.png" style="max-width: 480px;">', true);
                         winnerSound(); applauseSound();
-                        lastLevel = checkpoint(CHECKPOINT_GAME);
+                        checkpoint(CHECKPOINT_GAME);
                         // Session Storage
-                        syncSessionStorage('UPDATE', lastCoin, lastLevel);    // Save data Game to session storage
-                        setPlayer(PLAYER_GAME);                               // Set data player game to lobby board
-                        resetGame();                                          // Reset all values and variables to default
-                        CHECKPOINT_GAME = CURRENT_COIN = 0;                   // Reset Checkpoint & Current Coin
+                        syncSessionStorage('UPDATE', lastCoin, playerWin, playerLose);      // Save data Game to session storage
+                        setPlayer(PLAYER_GAME);                           // Set data player game to lobby board
+                        resetGame();                                      // Reset all values and variables to default
+                        CHECKPOINT_GAME = CURRENT_COIN = 0;               // Reset Checkpoint & Current Coin
                         return;
                     }
                     // IF THE GAME IS ON LEVEL POINTS
@@ -681,26 +739,28 @@ const choiceButtons = Array.from(document.querySelectorAll('.multiple-choice'));
                     }
                     clearBoard();
                     randomHighlightText( randomText );
-                    gameStart(SETTINGS_GAME);
+                    gameStart(SETTINGS_GAME, PLAYER_GAME.settings);
                 }, 2500);
-                return; // Do not erase
+                return;
             }
-
-            // IF THE PLAYER ANSWERS WRONGLY THE CODE BELOW WILL RUN
+            // IF THE PLAYER ANSWERS WRONGLY 
+            // THE CODE BELOW WILL RUN
+            gameOverSound();
             setHighlightText({ 
                 mainText : 'SALAH!', 
                 captionText : `Jawaban yang benar adalah ${correctAnswer}`
             });
-            gameOverSound();
+            playAnswerAnimation('https://assets3.lottiefiles.com/temp/lf20_yYJhpG.json');
             setTimeout(() => {
-                lastLevel = checkpoint(CHECKPOINT_GAME);
+                checkpoint(CHECKPOINT_GAME);
+                playerLose = 1;
                 lastCoin = CURRENT_COIN;
-                modalToggle(`<img src="./dist/icon/emoji-5.svg" width="240" height="220"><br>
+                modalToggle(`<lottie-player src="https://assets1.lottiefiles.com/packages/lf20_vpzvfap4.json" class="mx-auto" background="transparent" speed="1" style="width:150px;height:150px;" loop autoplay></lottie-player><br>
                            <span style="font-size:1.5em;font-weight:700;">Game Over!</span><br>
                            Coin yang kamu dapatkan adalah ${CURRENT_COIN} <span><img src="./dist/icon/icCoin_Credit.svg"></span><br>Mau ulangi permainan?`
                             );
                 // Session Storage
-                syncSessionStorage('UPDATE', lastCoin, lastLevel);    // Save data Game to session storage
+                syncSessionStorage('UPDATE', lastCoin, playerWin, playerLose);    // Save data Game to session storage
                 setPlayer(PLAYER_GAME);                               // Set data player game to lobby board
                 resetGame();                                          // Reset all values and variables to default
                 CHECKPOINT_GAME = CURRENT_COIN = 0;                   // Reset Checkpoint & Current Coin
@@ -716,7 +776,8 @@ const finishGameBtn = document.querySelector('#finishGame');
 finishGameBtn.addEventListener('click', ()=> {
     modalToggle();   
     resetModal();
-    document.querySelector('.modal-footer #finishGame').innerHTML = `<img src="./dist/icon/icNo_btn.svg">`;
+    removeAnswerAnimation();
+    document.querySelector('.modal-footer #finishGame').innerHTML = `<img src="./dist/icon/icNo_btn.svg" width="180">`;
     document.body.classList.toggle('playing');
     transitionSound();
     setTimeout(transitionSound, 1500);
@@ -727,21 +788,19 @@ finishGameBtn.addEventListener('click', ()=> {
 const repeatGame = document.querySelector('#repeatGame');
 repeatGame.addEventListener('click', ()=> {
     modalToggle();
-    CHECKPOINT_GAME++
+    removeAnswerAnimation();
     setTimeout(() => {
         setHighlightText({
             mainText: 'Bersiap!', 
             captionText: 'Pertanyaan pertama'
         });
         setLevelGame(CHECKPOINT_GAME);
-        gameStart(SETTINGS_GAME);
+        gameStart(SETTINGS_GAME, PLAYER_GAME.settings);
     }, 1300);
+    // +1 each time
+    CHECKPOINT_GAME++;
 });
 
-
-/*  QUIT THE GAME ( redirect to index ) */
-const quitGameBtn = document.querySelector('#quitGame');
-quitGameBtn.addEventListener('click', quitGame);
 
 
 /*  HELP OPTIONS EVENTS */
@@ -762,37 +821,41 @@ optionHelperButtons.forEach( optionHelper => {
             }, 3000);
         }
 
-        /*  GOOGLING HELP OPTION  */
-        
     });
 });
 
 
 
-/*  SWTICH LANGUAGE BUTTON EVENT */
+/*  SWTICH LANGUAGE BUTTON EVENT  */
 const translateButton = document.getElementById('switch-lang');
 const switchLang = switchLanguage();
 translateButton.addEventListener('click', () => {
-    setTimeout(()=> switchLang( QUESTION_GAME ), 500);
+    setTimeout(()=> switchLang( QUESTION_GAME ), 300);
 });
 
 
 
 /*  SET CATEGORY EVENT ( it will first set the categories when the document is loaded ) */ 
 const categories = Array.from(document.querySelectorAll('input[type="checkbox"]'));
-const countCategory = selectCategory();                     // Counter of category array values
-getCategoryValue(categories, SETTINGS_GAME.categories);     // retrieve the values from the checked checkbox
+const counterCategory = selectCategory();       // Counter of category array values
+const arrCategory = [];
+getCategoryValue(categories, arrCategory);     // retrieve the values from the checked checkbox
 
 
 /*  APPLY SETTINGS BUTTON EVENT */
-document.getElementById('saveSettings').addEventListener('click', saveSettings);
+document.getElementById('saveSettings').addEventListener('click', ()=> {
+    const message = saveSettings();
+    alert(message);
+});
 
     
 /*  SETTINGS BUTTON EVENT */
 // const settingsButton = document.getElementById('settingsGame');
 document.getElementById('settingsGame').addEventListener('click', ()=> {
+    let categorySelected = PLAYER_GAME?.settings?.categories;
+    categorySelected ? categorySelected : categorySelected = SETTINGS_GAME.settings.categories;
     clickSound();
-    checkedCategory(categories, SETTINGS_GAME.categories);
+    checkedCategory(categories, categorySelected );
 });
 
 
@@ -800,13 +863,14 @@ document.getElementById('settingsGame').addEventListener('click', ()=> {
 // const closeSettingsButton = document.getElementById('closeSettings');
 document.getElementById('closeSettings').addEventListener('click', ()=> {
     let validateCount = 0;
-    let countCategory = SETTINGS_GAME.categories.length;
+    let categorySelectCount = PLAYER_GAME.settings.categories.length;
     categories.forEach( ctg => {
         ctg.checked ? validateCount++ : '';
     });
-    if (validateCount > countCategory || validateCount < countCategory) {
+    if (validateCount > categorySelectCount || validateCount < categorySelectCount) {
         if(confirm('Ada perubahan yang belum disimpan. Klik "OK" untuk menyimpan!')){
-            saveSettings();
+            const message = saveSettings();
+            alert(message);
             return;
         }
     }
@@ -821,7 +885,8 @@ leftGameButton.addEventListener('click', function() {
 
     document.getElementById('closeModal').classList.remove('d-none');
     document.getElementById('escapeGame').classList.remove('d-none');
-    modalToggle('Mau kabur? Renungin pepatah berikut<br>"Lebih Baik Kalah Bertanding Daripada Menyerah Tanpa Thingking!"<br>Masih mau kabur?');
+    modalToggle(`<lottie-player src="https://assets1.lottiefiles.com/packages/lf20_fFVfCt.json" class="mx-auto" background="transparent" speed="1" style="width:260px;height:260px;margin-top:-25px" loop autoplay></lottie-player>
+    <br>Mau kabur? Renungin pepatah berikut<br>"Lebih Baik Kalah Bertanding Daripada Menyerah Tanpa Thingking!"<br>Masih mau kabur?`);
 });
 
 
@@ -841,14 +906,25 @@ document.getElementById('escapeGame').addEventListener('click', ()=> {
     if (questionText.innerText !== "") {
         timing = 0;
     }
-
+    clickSound();
     setTimeout(()=>{
         transitionsBoard();
-        transitionSound();
         leftGame();
-        setTimeout(transitionSound, 1500);
-        document.getElementById('escapeGame').innerHTML = '<img src="./dist/icon/icConfirmAfk_btn.svg">';
+        setTimeout(transitionSound, 400);
+        setTimeout(transitionSound, 1200);
+        document.getElementById('escapeGame').innerHTML = '<img src="./dist/icon/icConfirmAfk_btn.svg" width="180">';
     }, timing);
-
-    document.getElementById('escapeGame').innerHTML = '<img src="./dist/icon/icWait.svg">';
+    document.getElementById('escapeGame').innerHTML = '<img src="./dist/icon/icWait.svg" width="180">';
 });
+
+
+/*  CLOSE BUTTON SOUND CLICK  */ 
+document.querySelectorAll('button[data-dismiss="modal"]').forEach(btn => {
+    btn.addEventListener('click', closeSound);
+});
+
+
+
+/*  QUIT THE GAME ( redirect to index ) */
+const quitGameBtn = document.getElementById('#exitGame');
+quitGameBtn.addEventListener('click', quitGame);

@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="shortcut icon" href="./dist/img/favicon.ico">
     <link rel="stylesheet" href="./dist/bootstrap/bootstrap.min.css">
-    <link rel="stylesheet" href="./source/css/app.css">
+    <link rel="stylesheet" href="./src/css/app.css">
     <title>GG Quiz</title>
 </head>
 <body class="">
@@ -15,42 +15,55 @@
         <div class="container">
             <div class="wrapper" id="lobby">
                 <div class="board col-12 p-0">
-                    <div class="lobby row justify-content-center align-items-center m-0">
-                        <div class="logo-sm">
-                            <img src="./dist/icon/Logo.png" alt="logo" width="85" height="85" >
-                        </div>
-                        <div class="help-topbar">
-                            <button class="btn btn-md help-btn ml-2 p-0 px-2" data-toggle="modal" data-target="#modalRules">?</button></p>
-                        </div>
-                        <div class="col-10">
-                            <div class="lobby-inner row justify-content-start">
-                                <div class="col-8 d-flex justify-content-center align-items-center">
-                                    <img src="./dist/icon/icAvatar.svg">
-                                    <div class="col-6">
-                                        <h1 class="player player-name">
-                                            player name
-                                        </h1>
-                                        <p class="player"><span><img src="./dist/icon/icCoin_Lobby.svg">&nbsp;&nbsp;</span><span class="player-coin">0</span></p>
-                                    </div>
-                                </div>
-                                <div class="col-3 d-flex justify-content-center align-items-center">
-                                    <div class="start-play">
-                                        <button class="btn btn-lg p-0" id="playGame"><img src="./dist/icon/icStart_Play.svg"></button>
-                                    </div>
-                                </div>
+                    <div class="lobby row justify-content-between align-items-center m-0">
+                        <div class="col-5" style="height: 100%;">
+                            <div class="lobby-inner text-center">
+                                <img src="dist/icon/icAvatar.svg">
+                                <h1 class="player player-name">player name</h1>
+                                <p class="player player-win mb-2"><span id="player-win">0</span>x menang</p>
+                                <p class="player player-fail"><span id="player-fail">0</span>x gagal</p>
                             </div>
                         </div>
-                        <div class="col-12">
-                            <div class="lobby-footer row justify-content-between">
-                                <div class="setting text-left">
-                                    <button class="btn btn-lg p-0" id="settingsGame" data-toggle="modal" data-target="#modalSettings"><img src="./dist/icon/icSetting.svg"></button><span class="tittle-section" style="font-size:1.3rem;font-family:'Lato';">&nbsp;Pengaturan</span>
+                        <div class="col-6 p-0 pr-4" style="height: 100%;">
+                            <div class="btn-wrapper">
+                                <div class="gradient-bg display-coin">
+                                    <div class="d-flex justify-content-center align-items-center">
+                                        <lottie-player src="https://assets6.lottiefiles.com/packages/lf20_knayiqhb.json" background="transparent" speed="1"  style="width:150px;height:150px;margin-left:-120px;" loop autoplay></lottie-player>
+                                        <p class="player player-coin m-0">0</p>
+                                    </div>
                                 </div>
-                                <div class="quit text-right">
-                                    <button class="btn btn-lg p-0" id="quitGame"><img src="./dist/icon/icQuit.svg"></button>
+                                <div class="gradient-bg start-play" id="playGame">
+                                    <div class="d-flex justify-content-center align-items-center">
+                                        <p class="m-0 mr-3">PLAY</p><img src="dist/icon/icPlayCircle.svg">
+                                    </div>
+                                </div>
+                                <div class="row m-0 justify-content-center">
+                                    <div class="col-4 pl-0">
+                                        <div class="gradient-btn setting-menu">
+                                            <button class="btn btn-lg bg-transparent d-flex justify-content-center align-items-center" id="settingsGame" data-toggle="modal" data-target="#modalSettings" style="width: 100%;">
+                                                <img src="dist/icon/icSettingCircle.svg" style="position: absolute;">
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="col-4" style="padding:0 7.5px;">
+                                        <div class="gradient-btn help-menu">
+                                            <button class="btn btn-lg bg-transparent d-flex justify-content-center align-items-center" data-toggle="modal" data-target="#modalRules" style="width: 100%;" onclick="clickSound();">
+                                               ?
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="col-4 pr-0">
+                                        <div class="gradient-btn quit-menu">
+                                            <button class="btn btn-lg bg-transparent d-flex justify-content-center align-items-center" id="#exitGame" style="width: 100%;">
+                                                <img src="dist/icon/icQuitCircle.svg" style="position: absolute;">
+                                            </button>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
+
                 </div>
             </div>
             <div class="wrapper" id="gameplay">
@@ -81,9 +94,9 @@
                         <div class="help-bar mt-2">
                             <p class="text-center">Bantuan<button class="btn btn-xs help-btn ml-2 p-0 px-2" data-toggle="modal" data-target="#modalHelp">?</button></p>
                             <div class="row justify-content-center m-0">
-                                <button class="option-helper btn btn-md p-0 px-1 disabled" id="highlightOption"><img src="./dist/icon/icHighlight_btn.svg" class="active"><img src="./dist/icon/highlightOption.svg" class="disabled"></button>
-                                <button class="option-helper btn btn-md p-0 px-1 disabled" id="fiftyOption"><img src="./dist/icon/icFifty_btn.svg" class="active"><img src="./dist/icon/fiftyOption.svg" class="disabled"></button>
-                                <a href="https://www.google.com/" class="option-helper btn btn-md p-0 px-1 disabled" id="googleSearch" target="_blank"><img src="./dist/icon/icGoogle_btn.svg" class="active"><img src="./dist/icon/googleSearch.svg" class="disabled"></a>
+                                <button class="option-helper btn btn-md p-0 px-1 disabled" id="highlightOption"><img src="./dist/icon/highlightOption_on.svg" class="active"><img src="./dist/icon/highlightOption_off.svg" class="disabled"></button>
+                                <button class="option-helper btn btn-md p-0 px-1 disabled" id="fiftyOption"><img src="./dist/icon/fiftyOption_on.svg" class="active"><img src="./dist/icon/fiftyOption_off.svg" class="disabled"></button>
+                                <a href="https://www.google.com/" class="option-helper btn btn-md p-0 px-1 disabled" id="googleSearch" target="_blank"><img src="./dist/icon/googleSearch_on.svg" class="active"><img src="./dist/icon/googleSearch_off.svg" class="disabled"></a>
                             </div>
                         </div>
                     </div>
@@ -94,13 +107,14 @@
                         <div class="row m-0 justify-content-end">
                             <div class="player-bar">
                                 <h3 class="player player-name" style="font-size:16px;"></h3>
-                                <p class="player" style="font-size: 16px;"><span><img src="./dist/icon/icCoin_Credit.svg">&nbsp;&nbsp;</span><span class="player-coin"></span></p>
+                                <span><img src="dist/icon/icCoin_Credit.svg">&nbsp;&nbsp;</span><span class="player player-coin" style="font-size: 18px;"></span>
                             </div>
                         </div>
                     </div>
                     <div class="col-12">
                         <div class="right-wrapper p-0 pl-2">
-                            <div class="instruc-game col-12 p-0 text-center mt-2">
+                            <div class="instruc-game col-12 d-flex flex-column justify-content-end align-items-center text-center mt-2 p-0">
+                                
                                 <h1 class="answer-text"></h1>
                                 <p class="caption-text"></p>
                             </div>
@@ -119,19 +133,19 @@
                             </div>
                             <div class="option-text d-flex flex-wrap">
                                 <div class="multiple-choice disabled">
-                                    <p>A.</p>
+                                    <p>A</p>
                                     <p class="choice-text"></p>
                                 </div>
                                 <div class="multiple-choice disabled">
-                                    <p>B.</p>
+                                    <p>B</p>
                                     <p class="choice-text"></p>
                                 </div>
                                 <div class="multiple-choice disabled">
-                                    <p>C.</p>
+                                    <p>C</p>
                                     <p class="choice-text"></p>
                                 </div>
                                 <div class="multiple-choice disabled">
-                                    <p>D.</p>
+                                    <p>D</p>
                                     <p class="choice-text"></p>
                                 </div>
                             </div>
@@ -154,16 +168,7 @@
                 <button class="btn btn-lg p-0 mt-3" id="enterGame"><img src="./dist/icon/icEnter.svg"></button>                    
             </div>
         </div>
-        <div class="overlay">
-            <div class="preload">
-                <div class="preload-text">loading...</div>
-                <div class="preload-progress">
-                    <div class="spinner-grow text-success"></div>
-                    <div class="spinner-grow text-info"></div>
-                    <div class="spinner-grow text-warning"></div>
-                </div>
-            </div>
-        </div>
+        
         <div class="modal fade" id="modalGame" tabindex="-1" role="dialog" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
                 <div class="modal-content">
@@ -171,10 +176,10 @@
                         <p class="mb-0"></p>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" id="closeModal" class="btn btn-md p-0 d-none" data-dismiss="modal"><img src="./dist/icon/icCancelAfk_btn.svg"></button>
-                        <button type="button" id="escapeGame" class="btn btn-md p-0 d-none"><img src="./dist/icon/icConfirmAfk_btn.svg"></button>
-                        <button type="button" id="finishGame" class="btn btn-md p-0"><img src="./dist/icon/icNo_btn.svg"></button>
-                        <button type="button" id="repeatGame" class="btn btn-md p-0"><img src="./dist/icon/icRepeat_btn.svg"></button>
+                        <button type="button" id="closeModal" class="btn btn-md p-0 d-none" data-dismiss="modal"><img src="./dist/icon/icCancelAfk_btn.svg" width="180"></button>
+                        <button type="button" id="escapeGame" class="btn btn-md p-0 d-none"><img src="./dist/icon/icConfirmAfk_btn.svg" width="180"></button>
+                        <button type="button" id="finishGame" class="btn btn-md p-0"><img src="./dist/icon/icNo_btn.svg" width="180"></button>
+                        <button type="button" id="repeatGame" class="btn btn-md p-0"><img src="./dist/icon/icRepeat_btn.svg" width="180"></button>
                     </div>
                 </div>
             </div>
@@ -183,32 +188,34 @@
             <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
                 <div class="modal-content">
                     <div class="modal-body text-center pt-5">
-                        <h2>Pilihan Bantuan Quiz</h2>
-                        <p class="px-5 pt-3">Semua pilihan bantuan hanya dapat dipergunakan sekali saja selama bermain.</p><br>
-                        <div class="row justify-content-center">
-                            <div class="col-2 p-0"><img src="./dist/icon/icHighlight_btn.svg"></div>
-                            <div class="col-8 p-0 text-left">
-                                <h3>Highlight Answer</h3>
-                                <p>Pilihan bantuan ini akan memberi warna sorotan pada opsi jawaban yang benar</p>
-                            </div>
+                        <div class="close-modal">
+                            <button type="button" class="btn btn-md p-1" data-dismiss="modal"><img src="./dist/icon/icClose_btn.svg" width="50" height="50"></button>
                         </div>
-                        <div class="row justify-content-center">
-                            <div class="col-2 p-0"><img src="./dist/icon/icFifty_btn.svg"></div>
-                            <div class="col-8 p-0 text-left">
-                                <h3>Fifty fifty</h3>
-                                <p>Pilihan bantuan ini akan menghilangkan dua opsi jawaban yang salah, sehingga tersisa 1 opsi benar dan 1 opsi salah.</p>
+                        <h3 class="modal-title">Pilihan Bantuan Quiz</h3>
+                        <div class="rules-bg">
+                            <p class="m-0 p-4">Semua pilihan bantuan hanya dapat dipergunakan sekali saja selama bermain.</p><br>
+                            <div class="row justify-content-center">
+                                <div class="col-2 p-0"><img src="./dist/icon/highlightOption_on.svg"></div>
+                                <div class="col-8 p-0 text-left">
+                                    <h4 class="modal-title">Highlight Answer</h4>
+                                    <p>Pilihan bantuan ini akan memberi warna sorotan pada opsi jawaban yang benar</p>
+                                </div>
                             </div>
-                        </div>
-                       <div class="row justify-content-center">
-                           <div class="col-2 p-0"><img src="./dist/icon/icGoogle_btn.svg"></div>
-                           <div class="col-8 p-0 text-left">
-                                <h3>Googling</h3>
-                                <p>Pilihan bantuan ini akan memberikan kesempatan kepada Anda untuk mencari jawaban di mesin pencarian Google</p><br>
+                            <div class="row justify-content-center">
+                                <div class="col-2 p-0"><img src="./dist/icon/fiftyOption_on.svg"></div>
+                                <div class="col-8 p-0 text-left">
+                                    <h4 class="modal-title">Fifty fifty</h4>
+                                    <p>Pilihan bantuan ini akan menghilangkan dua opsi jawaban yang salah, sehingga tersisa 1 opsi benar dan 1 opsi salah.</p>
+                                </div>
+                            </div>
+                           <div class="row justify-content-center">
+                               <div class="col-2 p-0"><img src="./dist/icon/googleSearch_on.svg"></div>
+                               <div class="col-8 p-0 text-left">
+                                    <h4 class="modal-title">Googling</h4>
+                                    <p>Pilihan bantuan ini akan memberikan kesempatan kepada Anda untuk mencari jawaban di mesin pencarian Google</p><br>
+                               </div>
                            </div>
-                       </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-md" data-dismiss="modal"><img src="./dist/icon/icCloseModal_btn.svg"></button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -216,217 +223,236 @@
         <div class="modal fade" id="modalSettings" tabindex="-1" data-backdrop="static" data-keyboard="false">
             <div class="modal-dialog modal-md modal-dialog-scrollable" role="document">
                 <div class="modal-content">
-                        <div class="modal-header border-bottom-0 p-4">
-                                <h5 class="modal-title">Pengaturan</h5>
-                         </div>
-                         <div class="modal-body px-5 py-1">
-                             <p class="modal-title mb-3">Kategori Pertanyaan<span>&nbsp;(min 3 kategori)</span></p>
-                             <div class="container-fluid">
-                                 <div class="row justify-content-between">
-                                     <label class="form-check-label">Pengetahuan Umum</label>
-                                     <div class="form-check">
-                                         <input type="checkbox" class="form-check-input" id="general" value="9" checked>
-                                     </div>
+                    <div class="modal-header">
+                        <h5 class="modal-title">Pengaturan</h5>
+                    </div>
+                    <div class="modal-body px-5">
+                        <div class="close-modal">
+                            <button type="button" class="btn btn-md p-1" data-dismiss="modal" id="closeSettings"><img src="./dist/icon/icClose_btn.svg" width="50" height="50"></button>
+                        </div>
+                         <p class="modal-title mb-3">Kategori Pertanyaan<span>&nbsp;(min 3 kategori)</span></p>
+                         <div class="container-fluid">
+                             <div class="row justify-content-between category-list mb-2 p-4">
+                                 <label class="form-check-label">Pengetahuan Umum</label>
+                                 <div class="form-check">
+                                     <input type="checkbox" class="form-check-input" id="general" value="9">
                                  </div>
-                                 <div class="row justify-content-between">
-                                     <label class="form-check-label">Sains & Alam</label>
-                                     <div class="form-check">
-                                         <input type="checkbox" class="form-check-input" id="sci-nature" value="17" checked>
-                                     </div>
+                             </div>
+                             <div class="row justify-content-between category-list mb-2 p-4">
+                                 <label class="form-check-label">Sains & Alam</label>
+                                 <div class="form-check">
+                                     <input type="checkbox" class="form-check-input" id="sci-nature" value="17">
                                  </div>
-                                 <div class="row justify-content-between">
-                                     <label class="form-check-label">Sains: Komputer</label>
-                                     <div class="form-check">
-                                         <input type="checkbox" class="form-check-input" id="sci-comp" value="18" checked>
-                                     </div>
+                             </div>
+                             <div class="row justify-content-between category-list mb-2 p-4">
+                                 <label class="form-check-label">Sains: Komputer</label>
+                                 <div class="form-check">
+                                     <input type="checkbox" class="form-check-input" id="sci-comp" value="18">
                                  </div>
-                                 <div class="row justify-content-between">
-                                     <label class="form-check-label">Sains: Gadget</label>
-                                     <div class="form-check">
-                                         <input type="checkbox" class="form-check-input" id="sci-gad" value="30" checked>
-                                     </div>
+                             </div>
+                             <div class="row justify-content-between category-list mb-2 p-4">
+                                <label class="form-check-label">Sains: Matematika</label>
+                                <div class="form-check">
+                                    <input type="checkbox" class="form-check-input" id="sci-math" value="19">
+                                </div>
+                            </div>
+                             <div class="row justify-content-between category-list mb-2 p-4">
+                                 <label class="form-check-label">Gadget/Teknologi</label>
+                                 <div class="form-check">
+                                     <input type="checkbox" class="form-check-input" id="sci-gad" value="30">
                                  </div>
-                                 <div class="row justify-content-between">
-                                     <label class="form-check-label">Hiburan: Film</label>
-                                     <div class="form-check">
-                                         <input type="checkbox" class="form-check-input" id="ent-movie" value="11" checked>
-                                     </div>
+                             </div>
+                             
+                             <div class="row justify-content-between category-list mb-2 p-4">
+                                 <label class="form-check-label">Hiburan: Film</label>
+                                 <div class="form-check">
+                                     <input type="checkbox" class="form-check-input" id="ent-movie" value="11">
                                  </div>
-                                 <div class="row justify-content-between">
-                                     <label class="form-check-label">Hiburan: Musik</label>
-                                     <div class="form-check">
-                                         <input type="checkbox" class="form-check-input" id="ent-music" value="12" checked>
-                                     </div>
+                             </div>
+                             <div class="row justify-content-between category-list mb-2 p-4">
+                                 <label class="form-check-label">Hiburan: Musik</label>
+                                 <div class="form-check">
+                                     <input type="checkbox" class="form-check-input" id="ent-music" value="12">
                                  </div>
-                                 <div class="row justify-content-between">
-                                     <label class="form-check-label">Hiburan: Video Game</label>
-                                     <div class="form-check">
-                                         <input type="checkbox" class="form-check-input" id="ent-games" value="15" checked>
-                                     </div>
+                             </div>
+                             <div class="row justify-content-between category-list mb-2 p-4">
+                                 <label class="form-check-label">Hiburan: Video Game</label>
+                                 <div class="form-check">
+                                     <input type="checkbox" class="form-check-input" id="ent-games" value="15">
                                  </div>
-                                 <div class="row justify-content-between">
-                                     <label class="form-check-label">Hiburan: Anime & Manga Jepang</label>
-                                     <div class="form-check">
-                                         <input type="checkbox" class="form-check-input" id="ent-anime" value="31" checked>
-                                     </div>
+                             </div>
+                             <div class="row justify-content-between category-list mb-2 p-4">
+                                 <label class="form-check-label">Hiburan: Anime & Manga Jepang</label>
+                                 <div class="form-check">
+                                     <input type="checkbox" class="form-check-input" id="ent-anime" value="31">
                                  </div>
-                                 <div class="row justify-content-between">
-                                     <label class="form-check-label">Olahraga</label>
-                                     <div class="form-check">
-                                         <input type="checkbox" class="form-check-input" id="sports" value="21" checked>
-                                     </div>
+                             </div>
+                             <div class="row justify-content-between category-list mb-2 p-4">
+                                 <label class="form-check-label">Olahraga</label>
+                                 <div class="form-check">
+                                     <input type="checkbox" class="form-check-input" id="sports" value="21">
                                  </div>
-                                 <div class="row justify-content-between">
-                                     <label class="form-check-label"> Geografi</label>
-                                     <div class="form-check">
-                                         <input type="checkbox" class="form-check-input" id="geography" value="22" checked>
-                                     </div>
+                             </div>
+                             <div class="row justify-content-between category-list mb-2 p-4">
+                                 <label class="form-check-label"> Geografi</label>
+                                 <div class="form-check">
+                                     <input type="checkbox" class="form-check-input" id="geography" value="22">
                                  </div>
-                                 <div class="row justify-content-between">
-                                     <label class="form-check-label">Sejarah</label>
-                                     <div class="form-check">
-                                         <input type="checkbox" class="form-check-input" id="history" value="23" checked>
-                                     </div>
+                             </div>
+                             <div class="row justify-content-between category-list mb-2 p-4">
+                                 <label class="form-check-label">Sejarah</label>
+                                 <div class="form-check">
+                                     <input type="checkbox" class="form-check-input" id="history" value="23">
                                  </div>
-                                 <div class="row justify-content-between">
-                                     <label class="form-check-label">Seni</label>
-                                     <div class="form-check">
-                                         <input type="checkbox" class="form-check-input" id="arts" value="25" checked>
-                                     </div>
+                             </div>
+                             <div class="row justify-content-between category-list mb-2 p-4">
+                                 <label class="form-check-label">Seni</label>
+                                 <div class="form-check">
+                                     <input type="checkbox" class="form-check-input" id="arts" value="25">
                                  </div>
-                                 <div class="row justify-content-between">
-                                     <label class="form-check-label">Hewan</label>
-                                     <div class="form-check">
-                                         <input type="checkbox" class="form-check-input" id="animals" value="27" checked>
-                                     </div>
-                                 </div>
-                                 <div class="row justify-content-between">
-                                    <button type="button" class="btn btn-lg p-0" id="saveSettings"><img src="./dist/icon/icApply_btn.svg"></button>
-                                 </div>    
                              </div>
                          </div>
-                     <div class="modal-footer">
-                         <button type="button" class="btn btn-md" data-dismiss="modal" id="closeSettings"><img src="./dist/icon/icCloseModal_btn.svg"></button>
-                     </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-lg btn-block p-3" id="saveSettings">terapkan</button>
+                    </div>
                 </div>
             </div>
         </div>
         <div class="modal fade" id="modalRules" tabindex="-1" data-backdrop="static" data-keyboard="false">
             <div class="modal-dialog modal-lg modal-dialog-scrollable" role="document">
                 <div class="modal-content">
-                    <div class="modal-header border-bottom-0 p-4">
-                        <h4 class="modal-title pl-2">Bantuan</h4>
+                    <div class="modal-header">
+                        <h4 class="modal-title">Bantuan</h4>
                     </div>
-                    <div class="modal-body px-5 py-1">
-                        <p class="modal-title pb-2 mb-3">Aturan Permainan</p>
-                        <ol class="text-left mx-4">
-                            <li>Ada 13 pertanyaan yang harus dijawab dengan benar untuk memenangi 10.000 coin</li>
-                            <li>Pemain akan melewati 5 titik level game, dimana semakin naik level semakin sulit pula pertanyaan yang diberikan</li>
-                            <li>Dalam perjalanan menuju tangga 10.000 coin, pemain akan dibekali dengan 3 pilihan bantuan yaitu 50/50 (Fifty fifty), Highlight answer (sorot jawaban), dan Googling (googling jawaban).</li>
-                            <li>Jika Pemain menjawab salah, maka coin yang didapatkan sesuai dengan posisi pada tangga coin saat itu</li>
-                        </ol>
-                        <ol class="text-left mx-4">
-                            <p class="mb-1">Permainan akan berakhir jika dan hanya jika:</p>
-                            <li>Pemain menjawab salah</li>
-                            <li>Pemain telah menyelesaikan pertanyaan ke-13 dengan benar.</li>
-                        </ol><br>
+                    <div class="modal-body px-5">
+                        <div class="close-modal">
+                            <button type="button" class="btn btn-md p-1" data-dismiss="modal"><img src="./dist/icon/icClose_btn.svg" width="50" height="50"></button>
+                        </div>
+                        <h1 class="tittle-section mb-3" style="font-size:18px;">Aturan Permainan</h1>
+                        <div class="rules-bg p-3">
+                            <ol class="text-left mx-4">
+                                <li>Ada 13 pertanyaan yang harus dijawab dengan benar untuk memenangi 10.000 coin</li>
+                                <li>Pemain akan melewati 5 titik level game, dimana semakin naik level semakin sulit pula pertanyaan yang diberikan</li>
+                                <li>Dalam perjalanan menuju tangga 10.000 coin, pemain akan dibekali dengan 3 pilihan bantuan yaitu 50/50 (Fifty fifty), Highlight answer (sorot jawaban), dan Googling (googling jawaban).</li>
+                                <li>Jika Pemain menjawab salah, maka coin yang didapatkan sesuai dengan posisi pada tangga coin saat itu</li>
+                            </ol>
+                            <ol class="text-left mx-4">
+                                <p class="mb-1">Permainan akan berakhir jika dan hanya jika:</p>
+                                <li>Pemain menjawab salah</li>
+                                <li>Pemain telah menyelesaikan pertanyaan ke-13 dengan benar.</li>
+                            </ol>
+                        </div>
                         <h1 class="tittle-section" style="font-size:18px;">Tingkatakan Hadiah</h1>
-                        <table class="table table-active table-borderless">
-                            <thead class="text-white">
-                                <tr>
-                                    <th>Level</th>
-                                    <th>Pertanyaan</th>
-                                    <th>coin</th>
-                                </tr>
-                            </thead>
-                            <tbody class="text-white">
+                        <div class="rules-bg p-3">
+                            <table class="table table-borderless">
+                                <thead class="text-white">
                                     <tr>
-                                        <td>Level 1 (easy)</td>
-                                        <td>Pertanyaan 1</td>
-                                        <td>5 <span><img src="./dist/icon/icCoin_Credit.svg"></span></td>
+                                        <th>Level</th>
+                                        <th>Pertanyaan</th>
+                                        <th>coin</th>
                                     </tr>
-                                    <tr>
-                                        <td></td>
-                                        <td>Pertanyaan 2</td>
-                                        <td> 15 <span><img src="./dist/icon/icCoin_Credit.svg"></span></td>
-                                    </tr>
-                                    <tr>
-                                        <td></td>
-                                        <td>Pertanyaan 3</td>
-                                        <td> 25 <span><img src="./dist/icon/icCoin_Credit.svg"></span></td>
-                                    </tr>
-                                    <tr>
-                                        <td>Level 2 (easy)</td>
-                                        <td>Pertanyaan 4</td>
-                                        <td> 50 <span><img src="./dist/icon/icCoin_Credit.svg"></span></td>
-                                    </tr>
-                                    <tr>
-                                        <td></td>
-                                        <td>Pertanyaan 5</td>
-                                        <td> 100 <span><img src="./dist/icon/icCoin_Credit.svg"></span></td>
-                                    </tr>
-                                    <tr>
-                                        <td></td>
-                                        <td>Pertanyaan 6</td>
-                                        <td> 200 <span><img src="./dist/icon/icCoin_Credit.svg"></span></td>
-                                    </tr>
-                                    <tr>
-                                        <td>Level 3 (medium)</td>
-                                        <td>Pertanyaan 7</td>
-                                        <td> 320 <span><img src="./dist/icon/icCoin_Credit.svg"></span></td>
-                                    </tr>
-                                    <tr>
-                                        <td></td>
-                                        <td>Pertanyaan 8</td>
-                                        <td> 640 <span><img src="./dist/icon/icCoin_Credit.svg"></span></td>
-                                    </tr>
-                                    <tr>
-                                        <td></td>
-                                        <td>Pertanyaan 9</td>
-                                        <td> 860 <span><img src="./dist/icon/icCoin_Credit.svg"></span></td>
-                                    </tr>
-                                    <tr>
-                                        <td>Level 4 (hard)</td>
-                                        <td>Pertanyaan 10</td>
-                                        <td> 1250 <span><img src="./dist/icon/icCoin_Credit.svg"></span></td>
-                                    </tr>
-                                    <tr>
-                                        <td></td>
-                                        <td>Pertanyaan 11</td>
-                                        <td> 2500 <span><img src="./dist/icon/icCoin_Credit.svg"></span></td>
-                                    </tr>
-                                    <tr>
-                                        <td>Level 5 (hard)</td>
-                                        <td>Pertanyaan 12</td>
-                                        <td> 5000 <span><img src="./dist/icon/icCoin_Credit.svg"></span></td>
-                                    </tr>
-                                    <tr>
-                                        <td></td>
-                                        <td>Pertanyaan 13</td>
-                                        <td> 10000 <span><img src="./dist/icon/icCoin_Credit.svg"></span></td>
-                                    </tr>
-                                </tbody>
-                        </table>                   
+                                </thead>
+                                <tbody class="text-white">
+                                        <tr>
+                                            <td>Level 1 (easy)</td>
+                                            <td>Pertanyaan 1</td>
+                                            <td>5 <span><img src="./dist/icon/icCoin_Credit.svg"></span></td>
+                                        </tr>
+                                        <tr>
+                                            <td></td>
+                                            <td>Pertanyaan 2</td>
+                                            <td> 15 <span><img src="./dist/icon/icCoin_Credit.svg"></span></td>
+                                        </tr>
+                                        <tr>
+                                            <td></td>
+                                            <td>Pertanyaan 3</td>
+                                            <td> 25 <span><img src="./dist/icon/icCoin_Credit.svg"></span></td>
+                                        </tr>
+                                        <tr>
+                                            <td>Level 2 (easy)</td>
+                                            <td>Pertanyaan 4</td>
+                                            <td> 50 <span><img src="./dist/icon/icCoin_Credit.svg"></span></td>
+                                        </tr>
+                                        <tr>
+                                            <td></td>
+                                            <td>Pertanyaan 5</td>
+                                            <td> 100 <span><img src="./dist/icon/icCoin_Credit.svg"></span></td>
+                                        </tr>
+                                        <tr>
+                                            <td></td>
+                                            <td>Pertanyaan 6</td>
+                                            <td> 200 <span><img src="./dist/icon/icCoin_Credit.svg"></span></td>
+                                        </tr>
+                                        <tr>
+                                            <td>Level 3 (medium)</td>
+                                            <td>Pertanyaan 7</td>
+                                            <td> 320 <span><img src="./dist/icon/icCoin_Credit.svg"></span></td>
+                                        </tr>
+                                        <tr>
+                                            <td></td>
+                                            <td>Pertanyaan 8</td>
+                                            <td> 640 <span><img src="./dist/icon/icCoin_Credit.svg"></span></td>
+                                        </tr>
+                                        <tr>
+                                            <td></td>
+                                            <td>Pertanyaan 9</td>
+                                            <td> 860 <span><img src="./dist/icon/icCoin_Credit.svg"></span></td>
+                                        </tr>
+                                        <tr>
+                                            <td>Level 4 (hard)</td>
+                                            <td>Pertanyaan 10</td>
+                                            <td> 1250 <span><img src="./dist/icon/icCoin_Credit.svg"></span></td>
+                                        </tr>
+                                        <tr>
+                                            <td></td>
+                                            <td>Pertanyaan 11</td>
+                                            <td> 2500 <span><img src="./dist/icon/icCoin_Credit.svg"></span></td>
+                                        </tr>
+                                        <tr>
+                                            <td>Level 5 (hard)</td>
+                                            <td>Pertanyaan 12</td>
+                                            <td> 5000 <span><img src="./dist/icon/icCoin_Credit.svg"></span></td>
+                                        </tr>
+                                        <tr>
+                                            <td></td>
+                                            <td>Pertanyaan 13</td>
+                                            <td> 10000 <span><img src="./dist/icon/icCoin_Credit.svg"></span></td>
+                                        </tr>
+                                    </tbody>
+                            </table>                   
+                        </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-md" data-dismiss="modal"><img src="./dist/icon/icCloseModal_btn.svg"></button>
+                        <button type="button" class="btn btn-md p-3" id="rulesOK" data-dismiss="modal" style="text-transform:capitalize;">Oke, mengerti</button>
                     </div>
                 </div>
             </div>
         </div>
-
         <div class="modal-backdrop fade"></div>
+        <div class="overlay">
+            <div class="preload">
+                <div class="preload-logo"><img src="./dist/img/Logo.png"></div>
+                <div class="preload-progress">
+                    <div class="spinner-grow text-success"></div>
+                    <div class="spinner-grow text-info"></div>
+                    <div class="spinner-grow text-warning"></div>
+                </div>
+            </div>
+        </div>
     </div>
     <div hidden>
-        <audio src="./dist/sounds/btn_click.wav" data-audio="click"></audio>
-        <audio src="./dist/sounds/menu_transition.wav" data-audio="transition"></audio>
-        <audio src="./dist/sounds/correct_answer.wav" data-audio="correct-answer"></audio>
-        <audio src="./dist/sounds/game_over.wav" data-audio="game-over"></audio>
-        <audio src="./dist/sounds/winner.wav" data-audio="winner-game"></audio>
-        <audio src="./dist/sounds/applause.wav" data-audio="applause"></audio>
+        <audio src="./dist/sounds/btn_click.wav" id="audio-click"></audio>
+        <audio src="./dist/sounds/btn_close.ogg" id="audio-close"></audio>
+        <audio src="./dist/sounds/menu_transition.wav" id="audio-transition"></audio>
+        <audio src="./dist/sounds/correct_answer.wav" id="audio-answer"></audio>
+        <audio src="./dist/sounds/game_over.wav" id="audio-gameover"></audio>
+        <audio src="./dist/sounds/winner.wav" id="audio-winner"></audio>
+        <audio src="./dist/sounds/applause.wav" id="audio-applause"></audio>
     </div>
+    <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
     <script src="./dist/js/jquery-3.4.1.js"></script>
     <script src="./dist/js/bootstrap.bundle.min.js"></script>
-    <script src="./source/js/app.js"></script>
+    <script src="./src/js/app.js"></script>
 </body>
 </html>
